@@ -1,35 +1,59 @@
 import { useState } from "react";
+import { auth, db } from "../firebase";
+
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+} from "firebase/firestore";
 
 function SendMessage({ room }) {
 
   const [text, setText] = useState("");
 
-  const send = (e) => {
+  const sendMessage = async (e) => {
 
     e.preventDefault();
 
-    if (!text) return;
+    if (text.trim() === "") return;
 
-    console.log("Room:", room);
+    const user = auth.currentUser;
 
-    console.log(text);
+    try {
 
-    setText("");
+      await addDoc(
+        collection(db, "rooms", room, "messages"),
+        {
+          text: text,
+          uid: user.uid,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          createdAt: serverTimestamp(),
+        }
+      );
+
+      setText("");
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
 
   };
 
   return (
 
-    <form onSubmit={send} className="send">
+    <form className="send" onSubmit={sendMessage}>
 
       <input
         type="text"
-        placeholder="Type message..."
+        placeholder="Type a message..."
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
 
-      <button>
+      <button type="submit">
         Send
       </button>
 
