@@ -1,0 +1,9 @@
+{
+  "short_name": "Chat",
+  "name": "React Firebase Chat",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#128C7E",
+  "background_color": "#ffffff"
+}
