@@ -1,81 +1,49 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   collection,
   query,
   orderBy,
-  onSnapshot
+  onSnapshot,
 } from "firebase/firestore";
 
 import { db } from "../firebase";
-
 import Message from "./Message";
 import SendMessage from "./SendMessage";
 
-function ChatRoom({ room }) {
-
+function ChatRoom({ roomId }) {
   const [messages, setMessages] = useState([]);
 
-  const bottomRef = useRef();
-
   useEffect(() => {
+    if (!roomId) return;
 
     const q = query(
-      collection(db, "rooms", room, "messages"),
+      collection(db, "rooms", roomId, "messages"),
       orderBy("createdAt")
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-
-      const list = [];
-
-      snapshot.forEach((doc) => {
-
-        list.push({
+      setMessages(
+        snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        });
-
-      });
-
-      setMessages(list);
-
-      setTimeout(() => {
-        bottomRef.current?.scrollIntoView({
-          behavior: "smooth",
-        });
-      }, 100);
-
+        }))
+      );
     });
 
     return () => unsubscribe();
-
-  }, [room]);
+  }, [roomId]);
 
   return (
-
-    <div className="chat">
-
-      <h2>{room}</h2>
-
+    <div className="chat-room">
       <div className="messages">
-
         {messages.map((msg) => (
-          <Message
-            key={msg.id}
-            message={msg}
-          />
+          <Message key={msg.id} message={msg} />
         ))}
-
-        <div ref={bottomRef}></div>
-
       </div>
 
-      <SendMessage room={room} />
-
+      <SendMessage roomId={roomId} />
     </div>
-
   );
-
 }
 
 export default ChatRoom;
