@@ -2,8 +2,7 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../firebase";
 
 function Login() {
-
-  const handleLogin = async () => {
+  const signIn = async () => {
     try {
       await signInWithPopup(auth, provider);
     } catch (err) {
@@ -13,11 +12,7 @@ function Login() {
 
   return (
     <div className="login">
-      <h1>React Firebase Chat</h1>
-
-      <button onClick={handleLogin}>
-        Sign in with Google
-      </button>
+      <button onClick={signIn}>Sign in with Google</button>
     </div>
   );
 }
