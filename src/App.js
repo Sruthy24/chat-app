@@ -1,23 +1,27 @@
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "./firebase";
-
-import Login from "./components/Login";
-import Navbar from "./components/Navbar";
-import RoomList from "./components/RoomList";
-
 import "./App.css";
+import { useState } from "react";
+import RoomList from "./components/RoomList";
+import ChatRoom from "./components/ChatRoom";
 
 function App() {
-  const [user] = useAuthState(auth);
-
-  if (!user) {
-    return <Login />;
-  }
+  const [selectedRoom, setSelectedRoom] = useState("General");
 
   return (
     <div className="app">
-      <Navbar />
-      <RoomList />
+
+      {/* Sidebar */}
+      <div className="sidebar">
+        <RoomList
+          selectedRoom={selectedRoom}
+          setSelectedRoom={setSelectedRoom}
+        />
+      </div>
+
+      {/* Chat Area */}
+      <div className="chat-container">
+        <ChatRoom roomId={selectedRoom} />
+      </div>
+
     </div>
   );
 }
