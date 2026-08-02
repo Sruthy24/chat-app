@@ -1,41 +1,68 @@
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../firebase";
+import "./Login.css";
 
 function Login() {
-
-  const signIn = async () => {
+  const handleGoogleLogin = async () => {
     try {
       await signInWithPopup(auth, provider);
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.error(error);
     }
   };
 
   return (
-    <div className="login-page">
+    <div className="login-container">
+      <div className="left-panel">
+        <div className="overlay">
+          <h1>ConnectHub</h1>
+          <p>
+            Stay connected with your friends and teams through secure,
+            real-time conversations.
+          </p>
 
-      <div className="login-card">
-
-        <h1>💬 ChatSphere</h1>
-
-        <p>
-          Create chat rooms, connect with friends and
-          communicate in real time.
-        </p>
-
-        <button className="google-btn" onClick={signIn}>
-
-          <img
-            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
-            alt="Google"
-          />
-
-          Continue with Google
-
-        </button>
-
+          <div className="features">
+            <div>💬 Create Unlimited Chat Rooms</div>
+            <div>⚡ Instant Messaging</div>
+            <div>🔒 Secure Google Authentication</div>
+            <div>☁ Cloud Powered by Firebase</div>
+          </div>
+        </div>
       </div>
 
+      <div className="right-panel">
+        <div className="login-card">
+
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt="Google"
+            className="google-logo"
+          />
+
+          <h2>Welcome Back</h2>
+
+          <p className="subtitle">
+            Continue with your Google account
+          </p>
+
+          <button
+            className="google-button"
+            onClick={handleGoogleLogin}
+          >
+            <img
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="Google"
+            />
+
+            Continue with Google
+          </button>
+
+          <p className="footer-text">
+            Powered by React.js & Firebase
+          </p>
+
+        </div>
+      </div>
     </div>
   );
 }
