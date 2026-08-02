@@ -13,29 +13,46 @@ function SendMessage({ roomId }) {
   const sendMessage = async (e) => {
     e.preventDefault();
 
-    if (text.trim() === "") return;
+    if (!text.trim()) return;
 
-    await addDoc(collection(db, "rooms", roomId, "messages"), {
-      text,
-      uid: auth.currentUser.uid,
-      name: auth.currentUser.displayName,
-      photoURL: auth.currentUser.photoURL,
-      createdAt: serverTimestamp(),
-    });
+    await addDoc(
+      collection(db, "rooms", roomId, "messages"),
+      {
+        text,
+        uid: auth.currentUser.uid,
+        name: auth.currentUser.displayName,
+        photoURL: auth.currentUser.photoURL,
+        createdAt: serverTimestamp(),
+      }
+    );
 
     setText("");
   };
 
   return (
     <form className="send-message" onSubmit={sendMessage}>
+
+      <button
+        type="button"
+        className="icon-btn"
+      >
+        😊
+      </button>
+
       <input
         type="text"
-        placeholder="Type message..."
+        placeholder="Type your message..."
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
 
-      <button type="submit">Send</button>
+      <button
+        className="send-btn"
+        type="submit"
+      >
+        ➤
+      </button>
+
     </form>
   );
 }
