@@ -1,13 +1,50 @@
 import { auth } from "../firebase";
 
 function Message({ message }) {
-  const isMine = auth.currentUser?.uid === message.uid;
+
+  const currentUser = auth.currentUser;
+
+  const isMine =
+    currentUser?.uid === message.uid;
 
   return (
-    <div className={isMine ? "my-message" : "other-message"}>
-      <strong>{message.name}</strong>
-      <p>{message.text}</p>
+
+    <div
+      className={
+        isMine
+          ? "message-row mine"
+          : "message-row"
+      }
+    >
+
+      {!isMine && (
+
+        <img
+          src={message.photoURL}
+          alt=""
+          className="avatar"
+        />
+
+      )}
+
+      <div
+        className={
+          isMine
+            ? "message mine-message"
+            : "message other-message"
+        }
+      >
+
+        {!isMine && (
+          <h5>{message.name}</h5>
+        )}
+
+        <p>{message.text}</p>
+
+      </div>
+
     </div>
+
   );
 }
 
