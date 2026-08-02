@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   collection,
   query,
@@ -12,6 +12,7 @@ import SendMessage from "./SendMessage";
 
 function ChatRoom({ roomId }) {
   const [messages, setMessages] = useState([]);
+  const bottomRef = useRef(null);
 
   useEffect(() => {
     if (!roomId) return;
@@ -33,15 +34,41 @@ function ChatRoom({ roomId }) {
     return () => unsubscribe();
   }, [roomId]);
 
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
+
   return (
     <div className="chat-room">
+
+      <div className="chat-header">
+
+        <div>
+          <h3>💬 Chat Room</h3>
+          <span className="online-status">
+            Online
+          </span>
+        </div>
+
+      </div>
+
       <div className="messages">
-        {messages.map((msg) => (
-          <Message key={msg.id} message={msg} />
+
+        {messages.map((message) => (
+          <Message
+            key={message.id}
+            message={message}
+          />
         ))}
+
+        <div ref={bottomRef}></div>
+
       </div>
 
       <SendMessage roomId={roomId} />
+
     </div>
   );
 }
