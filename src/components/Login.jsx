@@ -5,11 +5,21 @@ import "./Login.css";
 function Login() {
 const handleGoogleLogin = async () => {
   try {
+    console.log("Starting login...");
+
     const result = await signInWithPopup(auth, provider);
-    console.log("Login Success", result.user);
+
+    console.log("SUCCESS", result.user);
+    alert("Logged in successfully!");
   } catch (error) {
     console.error(error);
-    alert(`Error Code: ${error.code}\n\n${error.message}`);
+
+    alert(
+      "Code: " +
+        error.code +
+        "\n\nMessage:\n" +
+        error.message
+    );
   }
 };
 
