@@ -2,122 +2,148 @@ import { useEffect, useState } from "react";
 import {
   collection,
   addDoc,
-  serverTimestamp,
   onSnapshot,
 } from "firebase/firestore";
 
 import { db } from "../firebase";
-import ChatRoom from "./ChatRoom";
 
-function RoomList() {
-
+function RoomList({ selectedRoom, setSelectedRoom }) {
   const [rooms, setRooms] = useState([]);
-  const [selectedRoom, setSelectedRoom] = useState("");
-  const [newRoom, setNewRoom] = useState("");
+  const [roomName, setRoomName] = useState("");
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-
-    const unsubscribe = onSnapshot(
-      collection(db, "rooms"),
-      (snapshot) => {
-
-        const list = snapshot.docs.map((doc) => ({
+    const unsubscribe = onSnapshot(collection(db, "rooms"), (snapshot) => {
+      setRooms(
+        snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        }));
-
-        setRooms(list);
-
-        if (list.length > 0 && !selectedRoom) {
-          setSelectedRoom(list[0].id);
-        }
-      }
-    );
-
-    return () => unsubscribe();
-
-  }, [selectedRoom]);
-
-  const createRoom = async () => {
-
-    if (!newRoom.trim()) return;
-
-    await addDoc(collection(db, "rooms"), {
-      name: newRoom,
-      createdAt: serverTimestamp(),
+        }))
+      );
     });
 
-    setNewRoom("");
+    return unsubscribe;
+  }, []);
 
+  const createRoom = async () => {
+    if (!roomName.trim()) return;
+
+    await addDoc(collection(db, "rooms"), {
+      name: roomName,
+      createdAt: new Date(),
+    });
+
+    setRoomName("");
   };
 
-  const filteredRooms = rooms.filter((room) =>
-    room.name.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
-    <div className="main-container">
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
+      {/* Logo */}
 
-      <div className="sidebar">
+      <div
+        style={{
+          padding: "25px",
+          borderBottom: "1px solid #24313a",
+        }}
+      >
+        <h1 style={{ color: "white" }}>💬 ChatSphere</h1>
+      </div>
 
-        <h3>Chat Rooms</h3>
+      {/* Search */}
 
+      <div style={{ padding: "20px" }}>
         <input
-          className="search-input"
-          placeholder="🔍 Search room..."
+          placeholder="Search room..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "13px",
+            borderRadius: "10px",
+            border: "none",
+            outline: "none",
+            fontSize: "15px",
+          }}
+        />
+      </div>
+
+      {/* Create Room */}
+
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          padding: "0 20px 20px",
+        }}
+      >
+        <input
+          placeholder="New room"
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
+          style={{
+            flex: 1,
+            padding: "13px",
+            borderRadius: "10px",
+            border: "none",
+          }}
         />
 
-        <div className="create-room">
+        <button
+          onClick={createRoom}
+          style={{
+            background: "#00a884",
+            color: "white",
+            border: "none",
+            padding: "13px 18px",
+            borderRadius: "10px",
+            cursor: "pointer",
+          }}
+        >
+          Create
+        </button>
+      </div>
 
-          <input
-            placeholder="New room"
-            value={newRoom}
-            onChange={(e) => setNewRoom(e.target.value)}
-          />
+      {/* Room List */}
 
-          <button onClick={createRoom}>
-            + Create
-          </button>
-
-        </div>
-
-        <div className="room-list">
-
-          {filteredRooms.map((room) => (
-
+      <div
+        style={{
+          overflowY: "auto",
+          flex: 1,
+          padding: "0 10px",
+        }}
+      >
+        {rooms
+          .filter((room) =>
+            room.name.toLowerCase().includes(search.toLowerCase())
+          )
+          .map((room) => (
             <div
               key={room.id}
-              className={
-                selectedRoom === room.id
-                  ? "room active-room"
-                  : "room"
-              }
-              onClick={() => setSelectedRoom(room.id)}
+              onClick={() => setSelectedRoom(room.name)}
+              style={{
+                background:
+                  selectedRoom === room.name
+                    ? "#00a884"
+                    : "transparent",
+
+                color: "white",
+                marginBottom: "10px",
+                borderRadius: "12px",
+                padding: "15px",
+                cursor: "pointer",
+                transition: ".3s",
+              }}
             >
               💬 {room.name}
             </div>
-
           ))}
-
-        </div>
-
       </div>
-
-      <div className="chat-section">
-
-        {selectedRoom ? (
-          <ChatRoom roomId={selectedRoom} />
-        ) : (
-          <div className="empty-chat">
-            Select a room
-          </div>
-        )}
-
-      </div>
-
     </div>
   );
 }
