@@ -1,50 +1,86 @@
-.chat-room{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    height:100vh;
-    background:#efeae2;
-    background-image:url("https://www.transparenttextures.com/patterns/cream-paper.png");
+import { useEffect, useState } from "react";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
+
+import { db } from "../firebase";
+import Message from "./Message";
+import SendMessage from "./SendMessage";
+
+function ChatRoom({ roomId }) {
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    if (!roomId) return;
+
+    const q = query(
+      collection(db, "rooms", roomId, "messages"),
+      orderBy("createdAt")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setMessages(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+      );
+    });
+
+    return unsubscribe;
+  }, [roomId]);
+
+  return (
+    <>
+      {/* Header */}
+
+      <div className="chat-header">
+        <div className="chat-left">
+          <img
+            src="https://i.pravatar.cc/150?img=12"
+            alt=""
+          />
+
+          <div>
+            <div className="chat-name">{roomId}</div>
+
+            <div className="chat-status">
+              🟢 Online
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            fontSize: "24px",
+            color: "#666",
+            display: "flex",
+            gap: "20px",
+          }}
+        >
+          🔍 ⋮
+        </div>
+      </div>
+
+      {/* Messages */}
+
+      <div className="messages">
+        {messages.map((msg) => (
+          <Message
+            key={msg.id}
+            message={msg}
+          />
+        ))}
+      </div>
+
+      {/* Input */}
+
+      <SendMessage roomId={roomId} />
+    </>
+  );
 }
 
-.chat-header{
-    height:70px;
-    background:white;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 25px;
-    border-bottom:1px solid #ddd;
-    box-shadow:0 2px 6px rgba(0,0,0,.08);
-    flex-shrink:0;
-}
-
-.chat-title{
-    display:flex;
-    align-items:center;
-    gap:15px;
-}
-
-.chat-title img{
-    width:48px;
-    height:48px;
-    border-radius:50%;
-}
-
-.chat-title h3{
-    margin:0;
-}
-
-.chat-title p{
-    color:#1fa855;
-    font-size:14px;
-}
-
-.messages{
-    flex:1;
-    overflow-y:auto;
-    padding:30px;
-    display:flex;
-    flex-direction:column;
-    gap:18px;
-}
+export default ChatRoom;
