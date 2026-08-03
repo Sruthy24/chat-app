@@ -19,10 +19,10 @@ function SendMessage({ roomId }) {
       collection(db, "rooms", roomId, "messages"),
       {
         text,
+        createdAt: serverTimestamp(),
         uid: auth.currentUser.uid,
         name: auth.currentUser.displayName,
         photoURL: auth.currentUser.photoURL,
-        createdAt: serverTimestamp(),
       }
     );
 
@@ -30,29 +30,45 @@ function SendMessage({ roomId }) {
   };
 
   return (
-    <form className="send-message" onSubmit={sendMessage}>
-
+    <form
+      className="send-message"
+      onSubmit={sendMessage}
+    >
       <button
         type="button"
-        className="icon-btn"
+        style={{
+          background: "transparent",
+          border: "none",
+          fontSize: "26px",
+          cursor: "pointer",
+          color: "#666",
+        }}
       >
         😊
       </button>
 
       <input
         type="text"
-        placeholder="Type your message..."
+        placeholder="Type a message..."
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
 
       <button
-        className="send-btn"
         type="submit"
+        style={{
+          background: "#00a884",
+          border: "none",
+          width: "52px",
+          height: "52px",
+          borderRadius: "50%",
+          color: "white",
+          fontSize: "22px",
+          cursor: "pointer",
+        }}
       >
         ➤
       </button>
-
     </form>
   );
 }
