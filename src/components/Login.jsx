@@ -3,19 +3,13 @@ import { auth, provider } from "../firebase";
 import "./Login.css";
 
 function Login() {
- const handleGoogleLogin = async () => {
-  alert("Button clicked");
-
+const handleGoogleLogin = async () => {
   try {
-    console.log("Starting Google Sign-In...");
-
     const result = await signInWithPopup(auth, provider);
-
-    console.log(result.user);
-    alert("Login Successful!");
+    console.log("Login Success", result.user);
   } catch (error) {
     console.error(error);
-    alert(error.code + "\n" + error.message);
+    alert(`Error Code: ${error.code}\n\n${error.message}`);
   }
 };
 
