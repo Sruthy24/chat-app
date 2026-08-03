@@ -3,13 +3,18 @@ import { auth, provider } from "../firebase";
 import "./Login.css";
 
 function Login() {
-  const handleGoogleLogin = async () => {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+ const handleGoogleLogin = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    console.log("Logged in:", result.user);
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      `Login failed\n\n${error.code}\n\n${error.message}`
+    );
+  }
+};
 
   return (
     <div className="login-container">
